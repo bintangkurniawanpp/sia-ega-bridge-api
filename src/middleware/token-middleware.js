@@ -1,4 +1,4 @@
-import { getUmcToken, revokeUmcToken } from '../services/tokenService.js';
+import { getUmcToken, revokeUmcToken } from '../services/token-service.js';
 import logger from "../application/logger.js";
 
 // Declare variables to store token and expiration time
@@ -23,7 +23,7 @@ async function tokenMiddleware(req, res, next) {
     logger.info("Fetching new UMC token.");
     const tokenData = await getUmcToken();
     umcToken = tokenData.token;
-    console.log(umcToken);
+    
     const initialSessionDuration = 60 * 60 * 1000; // 60 minutes in milliseconds
     const maxSessionDuration = 7200 * 60 * 1000; // 7200 minutes in milliseconds
 
