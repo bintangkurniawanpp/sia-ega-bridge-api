@@ -1,0 +1,49 @@
+// services/arisdb-service.js
+
+import https from "https";
+import axios from "axios";
+import config from "../config/config.js";
+import logger from "../application/logger.js";
+
+// Axios Setup
+const axiosInstance = axios.create({
+  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+});
+
+
+// Obtain Database Info
+export const getDatabaseInfo = async (accessToken) => {
+  const { absUrl } = config[process.env.NODE_ENV] || config.development;
+  const url = `${absUrl}/databases`;
+  const params = {
+    attributes: "all",
+  };
+
+  const headers = {
+    Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+  };
+
+  try {
+    logger.info(`Requesting database info from ${url} with params ${JSON.stringify(params)} and headers ${JSON.stringify(headers)}`);
+    const response = await axiosInstance.get(url, { params, headers });
+    logger.info(`Successfully received response from ${url}`);
+    return response.data;
+  } catch (error) {
+    logger.error(`Error fetching database info: ${error.message}`);
+    throw error;
+  }
+};
+
+// Obtain Main Group GUID from database info
+export const getMainGroupGUID = async (accessToken, dbName) => {
+  try {
+    logger.info(`Fetching main group GUID for database ${dbName}`);
+    const databases = await getDatabaseInfo(accessToken);
+    const database = databases.items.find((db) => db.name === dbName);
+    return database ? database.maingroup_guid : null;
+  } catch (error) {
+    logger.error(`Error fetching main group GUID: ${error.message}`);
+    throw error;
+  }
+};

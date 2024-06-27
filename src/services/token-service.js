@@ -7,7 +7,7 @@ import logger from "../application/logger.js";
 const axiosInstance = axios.create({
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   headers: { "Content-Type": "application/x-www-form-urlencoded" },
-})
+});
 
 // Config
 const getConfig = () => {
@@ -21,7 +21,7 @@ const getConfig = () => {
 }
 
 // Obtain UMC Token
-async function getToken(url, params) {
+const getToken = async (url, params) => {
   try {
     logger.info(`Requesting UMC token from ${url}`);
     const response = await axiosInstance.post(url, params);
@@ -33,6 +33,7 @@ async function getToken(url, params) {
   }
 }
 
+
 export const getUmcToken = async () => {
   const { umcUrl, tenant, username, password } = getConfig();
   const params = new URLSearchParams({ tenant, name: username, password });
@@ -40,7 +41,7 @@ export const getUmcToken = async () => {
 }
 
 
-export async function revokeUmcToken(token) {
+export const revokeUmcToken = async (token) => {
   const revokeUrl = `${config.umcUrl}/tokens/${token}`; // ARIS revocation endpoint
   try {
       logger.info(`Revoking UMC token: ${token}`);
@@ -53,7 +54,6 @@ export async function revokeUmcToken(token) {
       }
   } catch (error) {
       logger.error("Error revoking UMC token:", error);
-      // Consider error handling strategies (see below)
   }
 }
 
