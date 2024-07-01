@@ -5,6 +5,7 @@ import axios from "axios";
 import logger from "../application/logger.js";
 import { getMainGroupGUID } from "./arisdb-service.js";
 import config from "../config/config.js";
+import { ResponseError } from "../error/response-error.js";
 
 // Axios Setup
 const axiosInstance = axios.create({
@@ -35,11 +36,7 @@ async function getGroupChildren(dbName, groupID, accessToken) {
   } catch (error) {
     if (error.response) {
       logger.error(`Error getting children: ${error.response.status} ${error.response.statusText}`);
-      throw {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        data: error.response.data
-      };
+      throw new ResponseError(error.response.status, error.response.statusText);
     } else {
       logger.error(`Error getting children: ${error.message}`);
       throw error;
@@ -77,6 +74,10 @@ const getNestedGroups = async (dbName, groupID, accessToken, currentDepth, maxDe
 // Get all instansi
 export const getAllInstansi = async (accessToken, dbName) => {
   const mainGroupGUID = await getMainGroupGUID(accessToken, dbName);
+  if (!mainGroupGUID) {
+    throw new ResponseError(404, `Main group GUID not found for database ${dbName}`);
+  }
+
   try {
     logger.info(`Getting instansi from main group ${mainGroupGUID}`);
     const topLevelGroups = await getGroupChildren(dbName, mainGroupGUID, accessToken);
@@ -106,7 +107,12 @@ export const getAllInstansi = async (accessToken, dbName) => {
       }
     };
   } catch (error) {
-    logger.error(`Error fetching instansi: ${error.message}`);
-    throw error;
+    if (error instanceof ResponseError) {
+      logger.error(`Error fetching instansi: ${error.message}`);
+      throw error;
+    } else {
+      logger.error(`Error fetching instansi: ${error.message}`);
+      throw new ResponseError(500, error.message);
+    }
   }
 };

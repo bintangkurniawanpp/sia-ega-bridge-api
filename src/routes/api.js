@@ -1,6 +1,7 @@
 import express from 'express';
 import tokenMiddleware from '../middleware/token-middleware.js';
 import checkApiKeyMiddleware from '../middleware/apikey-middleware.js';
+import errorMiddleware from '../middleware/error-middleware.js';
 import { getAllInstansiController } from '../controllers/instansi-controller.js';
 
 const arisRouter = express.Router();
@@ -63,6 +64,8 @@ arisRouter.get('/kegiatan/:id/domain/keamanan', (req, res) => {
     res.send('Domain Keamanan API');
 });
 
+// Error handling middleware
+arisRouter.use(errorMiddleware);
 
 
 export default arisRouter;

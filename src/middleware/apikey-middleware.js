@@ -1,3 +1,5 @@
+// middleware/apikey-middleware.js
+
 import config from '../config/config.js';
 import logger from "../application/logger.js";
 
@@ -6,10 +8,11 @@ function checkApiKeyMiddleware(req, res, next) {
 
   if (!apiKey) {
     logger.error("Missing API key.");
-    return res.status(401).send("Unauthorized");
+    return res.status(401).end("Unauthorized"); // Use end() for a more concise error response
   }
 
-  logger.info("checking API key...");
+  logger.info("Checking API key...");
+
   if (apiKey === config.development.apiKeyDev) {
     req.env = "development";
     req.dbName = config.development.absDatabaseDev;
@@ -20,7 +23,7 @@ function checkApiKeyMiddleware(req, res, next) {
     logger.info("Using production database: " + req.dbName);
   } else {
     logger.error("Invalid API key.");
-    return res.status(401).send("Unauthorized");
+    return res.status(401).end("Unauthorized"); // Use end() for a cleaner error response
   }
 
   next();
