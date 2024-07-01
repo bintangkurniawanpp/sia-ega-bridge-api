@@ -1,3 +1,5 @@
+// middleware/token-middleware.js
+
 import { getUmcToken, revokeUmcToken } from '../services/token-service.js';
 import logger from "../application/logger.js";
 
@@ -9,29 +11,29 @@ async function tokenMiddleware(req, res, next) {
   // Get the current time
   const currentTime = Date.now();
 
-  if (tokenExpirationTime) {
+  // Check if a valid token already exists
+  if (tokenExpirationTime && tokenExpirationTime > currentTime) {
     const timeRemaining = tokenExpirationTime - currentTime;
-
-    if (timeRemaining > 0) {
-      logger.info(`Reusing existing UMC token. Expires in ${timeRemaining / 1000} seconds.`);
-      req.umcToken = umcToken;
-      return next();
-    }
+    logger.info(`Reusing existing UMC token. Expires in ${timeRemaining / 1000} seconds.`);
+    req.umcToken = umcToken;
+    return next();
   }
 
   try {
     logger.info("Fetching new UMC token.");
     const tokenData = await getUmcToken();
     umcToken = tokenData.token;
-    
+
+    // Set initial and maximum session durations
     const initialSessionDuration = 60 * 60 * 1000; // 60 minutes in milliseconds
     const maxSessionDuration = 7200 * 60 * 1000; // 7200 minutes in milliseconds
 
-    tokenExpirationTime = currentTime + initialSessionDuration;
+    // Calculate expiration time with buffer for potential delays
+    tokenExpirationTime = currentTime + initialSessionDuration - 5000; // Subtract a buffer of 5 seconds
 
     logger.info(`New UMC token obtained. Initial expiration at ${new Date(tokenExpirationTime).toISOString()}`);
 
-    // Schedule token revocation just before the maximum session duration
+    // Schedule token revocation before maximum session duration
     setTimeout(async () => {
       try {
         await revokeUmcToken(umcToken);

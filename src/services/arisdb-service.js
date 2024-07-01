@@ -1,16 +1,14 @@
-// services/arisdb-service.js
-
 import https from "https";
 import axios from "axios";
 import config from "../config/config.js";
 import logger from "../application/logger.js";
+import { ResponseError } from "../error/response-error.js"; // Import ResponseError
 
 // Axios Setup
 const axiosInstance = axios.create({
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   headers: { "Content-Type": "application/x-www-form-urlencoded" },
 });
-
 
 // Obtain Database Info
 export const getDatabaseInfo = async (accessToken) => {
@@ -31,7 +29,7 @@ export const getDatabaseInfo = async (accessToken) => {
     return response.data;
   } catch (error) {
     logger.error(`Error fetching database info: ${error.message}`);
-    throw error;
+    throw new ResponseError(500, "Internal Server Error: Error fetching database information"); // Throw a ResponseError with details
   }
 };
 
@@ -44,6 +42,6 @@ export const getMainGroupGUID = async (accessToken, dbName) => {
     return database ? database.maingroup_guid : null;
   } catch (error) {
     logger.error(`Error fetching main group GUID: ${error.message}`);
-    throw error;
+    throw new ResponseError(500, "Internal Server Error: Error fetching main group GUID"); // Throw a ResponseError with details
   }
 };
