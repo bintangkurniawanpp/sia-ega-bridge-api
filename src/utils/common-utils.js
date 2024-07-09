@@ -1,8 +1,8 @@
 import axios from "axios";
 import https from "https";
 import config from "../config/config.js";
-import logger from "../application/logger.js";
 import { ResponseError } from "../error/response-error.js";
+import logger from "../application/logger.js";
 
 const axiosInstance = axios.create({
   httpsAgent: new https.Agent({ rejectUnauthorized: false }),
@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
 });
 
 export const getAxiosInstance = () => axiosInstance;
+
 
 // Get Group Children
 export const getGroupChildren = async (dbName, groupID, accessToken) => {
@@ -24,7 +25,7 @@ export const getGroupChildren = async (dbName, groupID, accessToken) => {
   };
 
   const headers = {
-    Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+    Authorization: `Bearer ${accessToken}`, 
   };
 
   try {
@@ -40,7 +41,7 @@ export const getGroupChildren = async (dbName, groupID, accessToken) => {
       throw error;
     }
   }
-}
+};
 
 // Get nested groups up to a certain depth recursively
 export const getNestedGroups = async (dbName, groupID, accessToken, currentDepth, maxDepth) => {
@@ -53,14 +54,13 @@ export const getNestedGroups = async (dbName, groupID, accessToken, currentDepth
     children.items.map(async (item) => {
       if (item.kind === "GROUP") {
         const nested = await getNestedGroups(dbName, item.guid, accessToken, currentDepth + 1, maxDepth);
-        const idAttribute = item.attributes.find(attr => attr.apiname === "AT_ID");
         const group = {
           guid: item.guid,
           name: item.attributes.find((attr) => attr.apiname === "AT_NAME").value,
-          id_kl: idAttribute ? idAttribute.value : null,
+          attributes: item.attributes
         };
         if (nested.length > 0) {
-          group.instansi = nested;
+          group.items = nested;
         }
         return group;
       } else {
