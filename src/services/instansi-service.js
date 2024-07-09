@@ -1,5 +1,3 @@
-// services/instansi-service.js
-
 import https from "https";
 import axios from "axios";
 import logger from "../application/logger.js";
@@ -56,12 +54,15 @@ const getNestedGroups = async (dbName, groupID, accessToken, currentDepth, maxDe
       if (item.kind === "GROUP") {
         const nested = await getNestedGroups(dbName, item.guid, accessToken, currentDepth + 1, maxDepth);
         const idAttribute = item.attributes.find(attr => attr.apiname === "AT_ID");
-        return {
+        const group = {
           guid: item.guid,
           name: item.attributes.find((attr) => attr.apiname === "AT_NAME").value,
           id_kl: idAttribute ? idAttribute.value : null,
-          items: nested,
         };
+        if (nested.length > 0) {
+          group.instansi = nested;
+        }
+        return group;
       } else {
         return null;
       }
@@ -91,11 +92,14 @@ export const getAllInstansi = async (accessToken, dbName) => {
   
     const results = await Promise.all(filteredGroups.map(async (group) => {
       const nestedGroups = await getNestedGroups(dbName, group.guid, accessToken, 1, 2);
-      return {
-          guid: group.guid,
-          name: group.attributes.find(attr => attr.apiname === 'AT_NAME').value,
-          items: nestedGroups
+      const result = {
+        guid: group.guid,
+        name: group.attributes.find(attr => attr.apiname === 'AT_NAME').value,
+      };
+      if (nestedGroups.length > 0) {
+        result.kategori_instansi = nestedGroups;
       }
+      return result;
     }));
     logger.info(`Successfully received nested instansi`);
 
@@ -103,7 +107,7 @@ export const getAllInstansi = async (accessToken, dbName) => {
       status: "OK",
       request: "getAllInstansi",
       data: {
-        instansi: results
+        jenis_instansi: results
       }
     };
   } catch (error) {

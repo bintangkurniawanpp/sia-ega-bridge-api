@@ -1,0 +1,84 @@
+{
+    "status": "OK",
+    "request": "getAllInstansi",
+    "data": {
+        "kategori_instansi": [
+            {
+                "guid": "66929ae1-0829-11ef-03f9-00505601464d",
+                "name": "2. Arsitektur Instansi Pusat",
+                "items": [
+                    {
+                        "guid": "73736b41-0829-11ef-03f9-00505601464d",
+                        "name": "Instansi Lainnya",
+                        "id_kl": null,
+                        "items": [
+                            {
+                                "guid": "55cc2be0-0829-11ef-03f9-00505601464d",
+                                "name": "Markas Besar Kepolisian Republik Indonesia",
+                                "id_kl": null,
+                                "items": []
+                            }
+                        ]
+                    },
+                    {
+                        "guid": "857d08a1-0829-11ef-03f9-00505601464d",
+                        "name": "Kementerian",
+                        "id_kl": null,
+                        "items": [
+                            {
+                                "guid": "d524d340-2216-11ef-03f9-00505601464d",
+                                "name": "Kementerian Desa, Pembangunan Daerah Tertinggal dan Transmigrasi",
+                                "id_kl": null,
+                                "items": []
+                            },
+                            {
+                                "guid": "406b9b30-15e6-11ef-03f9-00505601464d",
+                                "name": "Kementerian Energi dan Sumber Daya Mineral",
+                                "id_kl": "9999",
+                                "items": []
+                            }
+                        ]
+                    },
+                    {
+                        "guid": "55bb2bc1-0b25-11ef-03f9-00505601464d",
+                        "name": "Lembaga Pemerintah Non Kementerian",
+                        "id_kl": null,
+                        "items": [
+                            {
+                                "guid": "fd53df81-0846-11ef-03f9-00505601464d",
+                                "name": "Badan Pusat Statistik",
+                                "id_kl": null,
+                                "items": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "guid": "fb3858b0-0829-11ef-03f9-00505601464d",
+                "name": "3. Arsitektur Pemerintah Daerah",
+                "items": [
+                    {
+                        "guid": "101f4c71-082a-11ef-03f9-00505601464d",
+                        "name": "Kab/Kota",
+                        "id_kl": null,
+                        "items": [
+                            {
+                                "guid": "550adf41-084b-11ef-03f9-00505601464d",
+                                "name": "Pemerintah Kab. Musi Banyuasin",
+                                "id_kl": null,
+                                "items": []
+                            },
+                            {
+                                "guid": "1a2c1540-082a-11ef-03f9-00505601464d",
+                                "name": "Pemerintah Kota Malang",
+                                "id_kl": null,
+                                "items": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
