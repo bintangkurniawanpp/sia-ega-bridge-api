@@ -1,10 +1,20 @@
 import logger from "../application/logger.js";
 import { getMainGroupGUID } from "./arisdb-service.js";
+import { getGroupChildren, getNestedGroups } from "../utils/common-utils.js";
 import { ResponseError } from "../error/response-error.js";
-import { getGroupChildren, getNestedGroups } from "../utils/common-util.js";
 
+const transformAttributes = (attributes) => {
+  const transformed = {};
+  attributes.forEach(attr => {
+    if (attr.apiname === "AT_ID") {
+      transformed.id_kl = attr.value;
+    } else if (attr.apiname === "AT_NAME") {
+      transformed.name = attr.value;
+    }
+  });
+  return transformed;
+};
 
-// Get all instansi
 export const getAllInstansi = async (accessToken, dbName) => {
   const mainGroupGUID = await getMainGroupGUID(accessToken, dbName);
   if (!mainGroupGUID) {
@@ -24,14 +34,22 @@ export const getAllInstansi = async (accessToken, dbName) => {
   
     const results = await Promise.all(filteredGroups.map(async (group) => {
       const nestedGroups = await getNestedGroups(dbName, group.guid, accessToken, 1, 2);
-      const result = {
-        guid: group.guid,
-        name: group.attributes.find(attr => attr.apiname === 'AT_NAME').value,
-      };
-      if (nestedGroups.length > 0) {
-        result.kategori_instansi = nestedGroups;
-      }
-      return result;
+      const transformedNestedGroups = nestedGroups.map(item => {
+        const transformedItem = transformAttributes(item.attributes);
+        transformedItem.guid = item.guid;
+        if (item.items && item.items.length > 0) {
+          transformedItem.instansi = item.items.map(inst => {
+            const transformedInst = transformAttributes(inst.attributes);
+            transformedInst.guid = inst.guid;
+            return transformedInst;
+          });
+        }
+        return transformedItem;
+      });
+      const transformedGroup = transformAttributes(group.attributes);
+      transformedGroup.guid = group.guid;
+      transformedGroup.kategori_instansi = transformedNestedGroups;
+      return transformedGroup;
     }));
     logger.info(`Successfully received nested instansi`);
 

@@ -1,6 +1,6 @@
 import config from "../config/config.js";
 import logger from "../application/logger.js";
-import { getAxiosInstance } from "../utils/common-util.js";
+import { getAxiosInstance } from "../utils/common-utils.js";
 import { ResponseError } from "../error/response-error.js"; 
 
 const axiosInstance = getAxiosInstance();
