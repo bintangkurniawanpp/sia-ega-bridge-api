@@ -1,14 +1,9 @@
-import https from "https";
-import axios from "axios";
 import config from "../config/config.js";
 import logger from "../application/logger.js";
-import { ResponseError } from "../error/response-error.js"; // Import ResponseError
+import { getAxiosInstance } from "../utils/common-util.js";
+import { ResponseError } from "../error/response-error.js"; 
 
-// Axios Setup
-const axiosInstance = axios.create({
-  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-});
+const axiosInstance = getAxiosInstance();
 
 // Obtain Database Info
 export const getDatabaseInfo = async (accessToken) => {
